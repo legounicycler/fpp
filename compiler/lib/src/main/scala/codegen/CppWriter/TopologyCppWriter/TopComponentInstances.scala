@@ -19,7 +19,10 @@ case class TopComponentInstances(
 
   private def getComponentInstanceLines: List[Line] = {
     def getCode(ci: ComponentInstance): List[Line] = {
-      val componentName = getComponentNameAsQualIdent(ci)
+      val componentName = {
+        val implType = ci.aNode._2.data.implType.map(_.data)
+        implType.getOrElse(getComponentNameAsQualIdent(ci))
+      }
       val instanceName = getNameAsIdent(ci.qualifiedName)
       Line.addPrefixLine (line(s"// $instanceName")) (
         getCodeLinesForPhase (CppWriter.Phases.instances) (ci).getOrElse(
